@@ -9,17 +9,21 @@
 int lsh_cd(char **args);
 int lsh_help(char **args);
 int lsh_exit(char **args);
-
+int sh_bg(char **args); 
+// char ** arr[500][50];int currcomm;
 char *builtin_str[] = {
+    // "history",
   "cd",
   "help",
-  "exit"
+  "exit",
+  "bg"
 };
 
 int (*builtin_func[]) (char **) = {
   &lsh_cd,
   &lsh_help,
-  &lsh_exit
+  &lsh_exit,
+  &sh_bg
 };
 
 int lsh_num_builtins() {
@@ -58,6 +62,33 @@ int lsh_exit(char **args)
   return 0;
 }
 
+int sh_bg(char **args)
+{
+//args -- bg echo "hello"
+    ++args;
+//args -- echo "hello"
+    char *firstCmd= args[0];//echo
+    int childpid=fork();
+    if (childpid>=0)
+    {
+        if (childpid==0)
+        {
+            if (execvp(firstCmd,args)<0)
+            {
+                perror("Error on execvp\n");
+                exit(0);
+            }
+
+        }
+       
+    }
+    else{
+        perror("fork() error");
+    }
+    return 1;
+}
+
+
 int lsh_launch(char **args)
 {
   pid_t pid;
@@ -86,6 +117,7 @@ int lsh_launch(char **args)
 
 int lsh_execute(char **args)
 {
+   
   int i;
 
   if (args[0] == NULL) {
@@ -187,16 +219,22 @@ void lsh_loop(void)
   do {
     printf("> ");
     line = lsh_read_line();
+    // arr[currcomm]=line;
+    // currcomm++;
+     
+    
     args = lsh_split_line(line);
     status = lsh_execute(args);
-
+    
     free(line);
     free(args);
   } while (status);
 }
 
+
 int main(int argc, char **argv)
-{
+{ 
+    //currcomm=0;
   lsh_loop();
  return EXIT_SUCCESS;
 }
