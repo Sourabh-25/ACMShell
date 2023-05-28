@@ -11,24 +11,26 @@
 // initial declarations
 int ACMShell_cd(char **args);
 int ACMShell_help(char **args);
-int ACMShell_history(char **args);
 int ACMShell_exit(char **args);
 int sh_bg(char **args);
+int ACMShell_history(char **args);
 
 // builtins
 char *builtin_str[] = {
     "cd",
     "help",
-    "history",
     "exit",
-    "bg"};
+    "bg",
+    "history"
+    };
 // pointers to respective functions
 int (*builtin_func[])(char **) = {
     &ACMShell_cd,
     &ACMShell_help,
-    &ACMShell_history,
     &ACMShell_exit,
-    &sh_bg};
+    &sh_bg,
+    &ACMShell_history
+    };
 
 int ACMShell_num_builtins()
 {
@@ -72,32 +74,54 @@ struct Node {
 };
 struct Node* head = NULL;
 struct Node* cur = NULL;
+char* strAppend(char* str1, char* str2)
+{
+	char* str3 = (char*)malloc(sizeof(char*)*(strlen(str1)+strlen(str2)));
+  // char *str = " ";
+  strcpy(str3, str1);
+  // strcpy(str3, str);
+  strcat(str3, str2);
+	//printf("%s appended to %s --> %s\n",str1,str2,str3);
+	return str3;
+}
 void add_to_history(char **args){
-    if(head==NULL){
+  if(head==NULL){
     head = (struct Node *)malloc(sizeof(struct Node));
       head->str = (char *)malloc(0x1000);
-      strcpy(head->str, args[0]);
-        head->next = NULL;
+      // if(NULL!=args[1])
+      //   strcpy(head->str,args[0]);
+      //   else
+  char *str1 = " ";
+  if (args[1] == NULL) 
+  {      strcpy(head->str,strAppend(args[0],str1));}
+  else
+{  
+  strcpy(head->str,strAppend(args[0],str1));
+  strcpy(head->str, strAppend(head->str, args[1]));
+  }
+  //   strcpy(head->str,args[0]);
+  // if(NULL!=args[1])
+  //   strcpy(head->str,args[1]);
+
+  head->next = NULL;
   cur = head;
-    }
-    else{
-      struct Node *ptr = (struct Node *)malloc(sizeof(struct Node));
+  }
+else{
+    struct Node *ptr = (struct Node *)malloc(sizeof(struct Node));
     cur->next = ptr;
     ptr->str = (char *)malloc(0x1000);
-    strcpy(ptr->str, args[0]);
-        ptr->next = NULL;
+      char *str1 = " ";
+  if (args[1] == NULL) 
+  {      strcpy(ptr->str,strAppend(args[0],str1));}
+  else
+{  
+  strcpy(ptr->str,strAppend(args[0],str1));
+  strcpy(ptr->str, strAppend(ptr->str, args[1]));}
+    ptr->next = NULL;
     cur = ptr;
-    }
 }
-int ACMshell_history(char **args){  
-   struct Node* ptr = head;
-    int i = 1;
-    while (ptr != NULL)
-    {
-    printf(" %d %s\n",i++,ptr->str);
-    ptr = ptr->next;
-    }
-  return 1; }
+}
+
 // exit ACMShell
 int ACMShell_exit(char **args)
 {
@@ -126,6 +150,16 @@ int sh_bg(char **args)
   }
   return 1;
 }
+int ACMshell_history(char **args){  
+   struct Node* ptr = head;
+    int i = 1;
+    while (ptr != NULL)
+    {
+    printf(" %d %s\n",i++,ptr->str);
+    ptr = ptr->next;
+    }
+  return 1; 
+  }
 // some processes such as all the builtins just change the properties of
 // spawned child and not of the parent process.For them we have builtins and for
 // rest, we have following:
@@ -283,6 +317,7 @@ void ACMShell_loop(void)
     // currcomm++;
 
     args = ACMShell_split_line(line);
+          add_to_history(args);
     status = ACMShell_execute(args);
 
     free(line);
