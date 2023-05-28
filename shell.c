@@ -14,7 +14,13 @@ int ACMShell_help(char **args);
 int ACMShell_exit(char **args);
 int sh_bg(char **args);
 int ACMShell_history(char **args);
-
+//a struct for history's linked list:
+struct Node {
+    char *str;
+    struct Node* next;
+};
+struct Node* head = NULL;
+struct Node* cur = NULL;
 // builtins
 char *builtin_str[] = {
     "cd",
@@ -68,59 +74,8 @@ int ACMShell_help(char **args)
   return 1;
 }
 //creating functions and a struct for history:
-struct Node {
-    char *str;
-    struct Node* next;
-};
-struct Node* head = NULL;
-struct Node* cur = NULL;
-char* strAppend(char* str1, char* str2)
-{
-	char* str3 = (char*)malloc(sizeof(char*)*(strlen(str1)+strlen(str2)));
-  // char *str = " ";
-  strcpy(str3, str1);
-  // strcpy(str3, str);
-  strcat(str3, str2);
-	//printf("%s appended to %s --> %s\n",str1,str2,str3);
-	return str3;
-}
-void add_to_history(char **args){
-  if(head==NULL){
-    head = (struct Node *)malloc(sizeof(struct Node));
-      head->str = (char *)malloc(0x1000);
-      // if(NULL!=args[1])
-      //   strcpy(head->str,args[0]);
-      //   else
-  char *str1 = " ";
-  if (args[1] == NULL) 
-  {      strcpy(head->str,strAppend(args[0],str1));}
-  else
-{  
-  strcpy(head->str,strAppend(args[0],str1));
-  strcpy(head->str, strAppend(head->str, args[1]));
-  }
-  //   strcpy(head->str,args[0]);
-  // if(NULL!=args[1])
-  //   strcpy(head->str,args[1]);
 
-  head->next = NULL;
-  cur = head;
-  }
-else{
-    struct Node *ptr = (struct Node *)malloc(sizeof(struct Node));
-    cur->next = ptr;
-    ptr->str = (char *)malloc(0x1000);
-      char *str1 = " ";
-  if (args[1] == NULL) 
-  {      strcpy(ptr->str,strAppend(args[0],str1));}
-  else
-{  
-  strcpy(ptr->str,strAppend(args[0],str1));
-  strcpy(ptr->str, strAppend(ptr->str, args[1]));}
-    ptr->next = NULL;
-    cur = ptr;
-}
-}
+
 
 // exit ACMShell
 int ACMShell_exit(char **args)
@@ -150,7 +105,8 @@ int sh_bg(char **args)
   }
   return 1;
 }
-int ACMshell_history(char **args){  
+
+int ACMShell_history(char **args){  
    struct Node* ptr = head;
     int i = 1;
     while (ptr != NULL)
@@ -193,6 +149,56 @@ int ACMShell_launch(char **args)
   }
 
   return 1;
+}
+char* strAppend(char* str1, char* str2)
+{
+	char* str3 = (char*)malloc(sizeof(char*)*(strlen(str1)+strlen(str2)));
+  // char *str = " ";
+  strcpy(str3, str1);
+  // strcpy(str3, str);
+  strcat(str3, str2);
+	//printf("%s appended to %s --> %s\n",str1,str2,str3);
+	return str3;
+}
+void add_to_hist(char **args){
+  if(head==NULL){
+    head = (struct Node *)malloc(sizeof(struct Node));
+      head->str = (char *)malloc(0x1000);
+      // if(NULL!=args[1])
+      //   strcpy(head->str,args[0]);
+      //   else
+  char *str1 = " ";
+  if (args[1] == NULL) 
+  {      strcpy(head->str,strAppend(args[0],str1));}
+  else
+{  
+  strcpy(head->str,strAppend(args[0],str1));
+  strcpy(head->str, strAppend(head->str, args[1]));
+  }
+  //   strcpy(head->str,args[0]);
+  // if(NULL!=args[1])
+  //   strcpy(head->str,args[1]);
+
+  head->next = NULL;
+  cur = head;
+  }
+else{
+    struct Node *ptr = (struct Node *)malloc(sizeof(struct Node));
+    cur->next = ptr;
+    ptr->str = (char *)malloc(0x1000);
+      char *str1 = " ";
+  if (args[1] == NULL) 
+  {     
+     strcpy(ptr->str,strAppend(args[0],str1));
+  }
+  else
+{  
+  strcpy(ptr->str,strAppend(args[0],str1));
+  strcpy(ptr->str, strAppend(ptr->str, args[1]));
+  }
+    ptr->next = NULL;
+    cur = ptr;
+}
 }
 // executing the builtins and calling launc() for rest.
 int ACMShell_execute(char **args)
@@ -313,11 +319,8 @@ void ACMShell_loop(void)
   {
     printf("> ");
     line = ACMShell_read_line();
-    // arr[currcomm]=line;
-    // currcomm++;
-
     args = ACMShell_split_line(line);
-          add_to_history(args);
+          add_to_hist(args);
     status = ACMShell_execute(args);
 
     free(line);
