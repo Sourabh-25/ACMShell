@@ -11,8 +11,8 @@
 // initial declarations
 int ACMShell_cd(char **args);
 int ACMShell_help(char **args);
-int ACMShell_exit(char **args);
 int ACMShell_history(char **args);
+int ACMShell_exit(char **args);
 int sh_bg(char **args);
 
 // builtins
@@ -65,9 +65,23 @@ int ACMShell_help(char **args)
 
   return 1;
 }
-//creating two funtctions for history:
+//creating functions and a struct for history:
+struct Node {
+    char *str;
+    struct Node* next;
+};
+struct Node* head = NULL;
+struct Node* cur = NULL;
 void add_to_history(char **args){}
-int ACMshell_history(char **args){ return 1; }
+int ACMshell_history(char **args){  
+   struct Node* ptr = head;
+    int i = 1;
+    while (ptr != NULL)
+    {
+    printf(" %d %s\n",i++,ptr->str);
+    ptr = ptr->next;
+    }
+  return 1;return 1; }
 // exit ACMShell
 int ACMShell_exit(char **args)
 {
