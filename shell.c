@@ -12,19 +12,21 @@
 int ACMShell_cd(char **args);
 int ACMShell_help(char **args);
 int ACMShell_exit(char **args);
+int ACMShell_history(char **args);
 int sh_bg(char **args);
 
 // builtins
 char *builtin_str[] = {
-    // "history",
     "cd",
     "help",
+    "history",
     "exit",
     "bg"};
 // pointers to respective functions
 int (*builtin_func[])(char **) = {
     &ACMShell_cd,
     &ACMShell_help,
+    &ACMShell_history,
     &ACMShell_exit,
     &sh_bg};
 
@@ -63,6 +65,9 @@ int ACMShell_help(char **args)
 
   return 1;
 }
+//creating two funtctions for history:
+void add_to_history(char **args){}
+int ACMshell_history(char **args){ return 1; }
 // exit ACMShell
 int ACMShell_exit(char **args)
 {
