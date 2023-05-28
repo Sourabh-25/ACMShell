@@ -72,7 +72,23 @@ struct Node {
 };
 struct Node* head = NULL;
 struct Node* cur = NULL;
-void add_to_history(char **args){}
+void add_to_history(char **args){
+    if(head==NULL){
+    head = (struct Node *)malloc(sizeof(struct Node));
+      head->str = (char *)malloc(0x1000);
+      strcpy(head->str, args[0]);
+        head->next = NULL;
+  cur = head;
+    }
+    else{
+      struct Node *ptr = (struct Node *)malloc(sizeof(struct Node));
+    cur->next = ptr;
+    ptr->str = (char *)malloc(0x1000);
+    strcpy(ptr->str, args[0]);
+        ptr->next = NULL;
+    cur = ptr;
+    }
+}
 int ACMshell_history(char **args){  
    struct Node* ptr = head;
     int i = 1;
@@ -81,7 +97,7 @@ int ACMshell_history(char **args){
     printf(" %d %s\n",i++,ptr->str);
     ptr = ptr->next;
     }
-  return 1;return 1; }
+  return 1; }
 // exit ACMShell
 int ACMShell_exit(char **args)
 {
